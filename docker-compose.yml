@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  pg:
+    image: postgres
+    container_name: pg-dev-tst
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./local-docker/dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=test_user
+      - POSTGRES_PASSWORD=test_pass
+      - POSTGRES_DB=test_db
+    networks:
+      - server
+
+networks:
+  server:
+    external: true
