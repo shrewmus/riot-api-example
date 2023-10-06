@@ -2,17 +2,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Leaderboard } from './leaderboard.entity';
+import { PlayerSummary } from './player-summary.entity';
 
 @Entity()
 export class Player {
-  @PrimaryGeneratedColumn('uuid')
-  uid: string;
-  @Column()
+  @PrimaryColumn()
   id: string;
   @Column()
   accountId: string;
@@ -30,6 +30,8 @@ export class Player {
   region: string;
   @OneToOne(() => Leaderboard, (leaderBoard) => leaderBoard.player)
   leaderBoard: Leaderboard;
+  @OneToMany(() => PlayerSummary, (summary) => summary.player)
+  summary: PlayerSummary[];
   @CreateDateColumn({ type: 'timestamp', default: () => 'NOW()' })
   createdAt: Date;
   @UpdateDateColumn({ type: 'timestamp', default: () => 'NOW()' })
