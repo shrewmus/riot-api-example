@@ -1,0 +1,71 @@
+name: Deploy to digitalocean
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to digitalocean applet
+        uses: appleboy/ssh-action@master
+        env:
+          ENV_CONTENTS: ${{ secrets.ENV_CONTENT }}
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.USERNAME}}
+          key: ${{secrets.KEY}}
+          command_timeout: 200m
+          envs: ENV_CONTENTS
+          script: |
+            export DIR_NAME=tproj
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+ 
+            wait_for_postgresql() {
+            docker-compose up -d
+            while true; do
+              status=$(docker-compose ps | grep pg-dev-tst | awk '{print $4}')
+              if [ "$status" == "Up" ] || [ "$status" == "Up (healthy)" ]; then
+                echo "PostgreSQL is ready."
+                break
+              fi
+              sleep 1
+              done
+            }
+
+            wait_for_postgresql_stop() {
+              docker-compose stop
+              while true; do
+                status=$(docker-compose ps | grep pg-dev-tst | awk '{print $4}')
+                if [ "$status" == "Exit" ]; then
+                  echo "PostgreSQL is stopped"
+                  break
+                fi
+                sleep 1
+              done
+            }
+
+            
+            if [ ! -d "$DIR_NAME" ]; then
+              git clone git@github.com:shrewmus/riot-api-example.git "$DIR_NAME"
+              cd "$DIR_NAME"
+              echo "$ENV_CONTENTS" > .env
+              npm install --production
+              npm run build
+              wait_for_postgresql
+              pm2 start ./dist/main.js
+            else
+              cd "$DIR_NAME"
+              pm2 stop main
+              wait_for_postgresql_stop
+              git pull origin master
+              rm .env
+              echo "$ENV_CONTENTS" > .env
+              npm install --production
+              npm run build
+              wait_for_postgresql
+              pm2 start ./dist/main.js
+            fi

@@ -12,14 +12,18 @@ For license please see LICENSE file
 - [x] keep api rate limits (no queues)
 - [x] get leaderboard by pleayer
 - [ ] cid/cd from github actions to digitalocean
+- [ ] check github action
+- [ ] translate shell script to 
 - [x] add postman collection
-- [ ] annotations to swagger docs
 
 ## next
 - [ ] keep api rate litmits (queues)
+- [ ] add error logs (possyble db)
 - [ ] change from auto update from typeorm entites to migrations
 - [ ] add graphql
 - [ ] handle bad request for api (repeat or log)
 - [ ] ci/cd from github actions to aws
 - [ ] caching
+- [ ] annotations to swagger docs
 - [ ] testing
+- [ ] create scheduler (crontask) for regular checks of players updates 

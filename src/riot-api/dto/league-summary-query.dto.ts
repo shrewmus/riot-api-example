@@ -1,12 +1,8 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { RegionDto } from './region.dto';
+import { IsNumber, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
+import { NameRegionDto } from './name-region.dto';
 
-export class LeagueSummaryQueryDto extends RegionDto {
-  @IsNotEmpty()
-  @IsString()
-  id: string;
-
+export class LeagueSummaryQueryDto extends NameRegionDto {
   @IsNumber()
   @Type(() => Number)
   @IsOptional()

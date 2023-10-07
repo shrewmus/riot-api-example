@@ -86,7 +86,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{server}}:{{port}}/api/v1/data/summary?id=AE9iWkzCDkxlojDJ0ycYJhTnYGn0UY532zOoZUDSigVKnz0&queue=0&region=NA1",
+					"raw": "{{server}}:{{port}}/api/v1/data/summary?name=Darius&queue=0&region=NA1",
 					"host": [
 						"{{server}}"
 					],
@@ -99,8 +99,8 @@
 					],
 					"query": [
 						{
-							"key": "id",
-							"value": "AE9iWkzCDkxlojDJ0ycYJhTnYGn0UY532zOoZUDSigVKnz0"
+							"key": "name",
+							"value": "Darius"
 						},
 						{
 							"key": "queue",

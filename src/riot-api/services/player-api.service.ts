@@ -7,10 +7,12 @@ import { PlayerDto } from '../dto/player.dto';
 import { NameRegionDto } from '../dto/name-region.dto';
 import { LeagueSummaryQueryDto } from '../dto/league-summary-query.dto';
 import { getIntEnumKeys, getIntEnumVals, Queues } from '../classes/interfaces';
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class PlayerApiService {
   constructor(
+    private configService: ConfigService,
     private riotApi: RiotApiAdapterService,
     private storageService: StorageService,
   ) {}
@@ -19,6 +21,7 @@ export class PlayerApiService {
     let player: PlayerDto =
       await this.storageService.getPlayerByName(nameRegion);
     if (player) {
+      // note: [SHR]: it would be good to transform entities to DTOs in all places where result directly passed to response
       return plainToClass(PlayerDto, player);
     }
     try {
@@ -76,11 +79,26 @@ export class PlayerApiService {
 
   async getPlayerSummary(summaryQuery: LeagueSummaryQueryDto) {
     this.riotApi.currentRegion = summaryQuery.region;
-    await this.updateLeaguesStats(summaryQuery.id);
-    return await this.storageService.getSummary(
-      summaryQuery.id,
+    let playerData;
+    try {
+      playerData = await this.getPlayerInfo(summaryQuery);
+      await this.updateLeaguesStats(playerData.id);
+    } catch (e) {
+      console.log('[ERR] get player summary', e);
+      if (e instanceof NotFoundException) {
+        throw e;
+      }
+    }
+    const summarys = await this.storageService.getSummary(
+      playerData.id,
       summaryQuery.queue,
     );
+    summarys.map((summary) => {
+      summary.icon = `${this.configService.get('CDN_URL')}/${this.configService.get('CDN_VERSION')}/img/profileicon/${playerData.profileIconId}.png`;
+      summary.name = playerData.name;
+      return summary;
+    });
+    return summarys;
   }
 
   async getPlayerLeaderboard(nameRegion: NameRegionDto) {
