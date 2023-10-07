@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Match, Player, PlayerSummary } from "./entity";
+import { Match, Player, PlayerSummary } from './entity';
 import { PlayerApiService } from './services/player-api.service';
 import { RiotApiAdapterService } from './services/riot-api-adapter.service';
 import { ConfigModule } from '@nestjs/config';

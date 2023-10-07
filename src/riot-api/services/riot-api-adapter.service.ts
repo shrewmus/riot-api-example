@@ -55,6 +55,7 @@ export class RiotApiAdapterService {
     if (queue !== Queues.ALL) {
       queryParams['queue'] = queue;
     }
+    console.log('[TEST] match params', queryParams);
     const url = `${this.urlBase(
       this.route,
     )}/match/v5/matches/by-puuid/${puuid}/ids`;
@@ -76,7 +77,9 @@ export class RiotApiAdapterService {
     url: string,
     params: { [key: string]: string } = {},
   ): Promise<T> {
-    const response = await lastValueFrom(this.httpService.get<T>(url, params));
+    const response = await lastValueFrom(
+      this.httpService.get<T>(url, { params }),
+    );
     return response.data;
   }
 

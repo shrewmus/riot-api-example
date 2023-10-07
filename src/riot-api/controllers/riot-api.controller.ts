@@ -9,7 +9,7 @@ import { PlayerApiService } from '../services/player-api.service';
 import { ApiTags } from '@nestjs/swagger';
 import { NameRegionDto } from '../dto/name-region.dto';
 import { MatchPageQueryDto } from '../dto/match-page-query.dto';
-import { LeagueSummaryQueryDto } from "../dto/league-summary-query.dto";
+import { LeagueSummaryQueryDto } from '../dto/league-summary-query.dto';
 
 @ApiTags('common data')
 @Controller({
@@ -34,5 +34,10 @@ export class RiotApiController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async getPlayerSummary(@Query() summaryQuery: LeagueSummaryQueryDto) {
     return await this.playerService.getPlayerSummary(summaryQuery);
+  }
+
+  @Get('leaderboard')
+  async getLeaderBoard(@Query() nameRegion: NameRegionDto) {
+    return await this.playerService.getPlayerLeaderboard(nameRegion);
   }
 }

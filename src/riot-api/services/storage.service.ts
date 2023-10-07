@@ -109,4 +109,41 @@ export class StorageService {
     // if (queue !== Queues.ALL) {
     // }
   }
+
+  async getPlayerLeads(playerId: string) {
+    // Use Raw SQL just to show how to do it
+    const query = `
+        WITH 
+        RankedRates AS (
+            SELECT 
+                uid,
+                "summonerId",
+                ROW_NUMBER() OVER (ORDER BY ps.wins::float / (ps.wins + ps.losses) ASC) as "winRate"
+            FROM player_summary as ps
+        ),
+        
+        RankedLPoints AS (
+            SELECT
+                uid,
+                "summonerId",
+                ROW_NUMBER() OVER (ORDER BY ps."leaguePoints" ASC) as "leaguePoints"
+            FROM player_summary as ps
+        )
+        
+        SELECT
+            r1."summonerId",
+            r1."winRate",
+            r2."leaguePoints"
+        FROM RankedRates r1
+        JOIN RankedLPoints r2 ON r1."summonerId" = r2."summonerId"
+        WHERE r1."summonerId" = $1
+    `;
+    const lead = await this.summaryRepo.query(query, [playerId]);
+    const res = { leaguePoints: { top: null }, winRate: { top: null } };
+    if (lead && lead.length) {
+      res.leaguePoints.top = lead[0].leaguePoints;
+      res.winRate.top = lead[0].winRate;
+    }
+    return res;
+  }
 }

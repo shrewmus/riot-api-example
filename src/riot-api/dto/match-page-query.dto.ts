@@ -2,7 +2,7 @@ import { NameRegionDto } from './name-region.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNumber, IsOptional, Max, Min } from 'class-validator';
 import { Queues } from '../classes/interfaces';
-import { Type } from "class-transformer";
+import { Type } from 'class-transformer';
 
 export class MatchPageQueryDto extends NameRegionDto {
   @ApiPropertyOptional({

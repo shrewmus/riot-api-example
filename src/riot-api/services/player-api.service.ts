@@ -6,6 +6,7 @@ import { plainToClass } from 'class-transformer';
 import { PlayerDto } from '../dto/player.dto';
 import { NameRegionDto } from '../dto/name-region.dto';
 import { LeagueSummaryQueryDto } from '../dto/league-summary-query.dto';
+import { getIntEnumKeys, getIntEnumVals, Queues } from '../classes/interfaces';
 
 @Injectable()
 export class PlayerApiService {
@@ -26,6 +27,7 @@ export class PlayerApiService {
         nameRegion.region,
       );
       await this.storageService.savePlayer(player, nameRegion.region);
+      await this.updateLeaguesStats(player.id);
       return player;
     } catch (e) {
       console.log('[ERR]', e);
@@ -42,20 +44,29 @@ export class PlayerApiService {
       matchPage.perPage,
       matchPage.queue,
     );
-    const { existedMatches, missedIds } =
-      await this.storageService.getMatchesByIds(matchIds);
-    let newMatches: any[] = [];
+    const { missedIds } = await this.storageService.getMatchesByIds(matchIds);
     if (missedIds.length) {
-      newMatches = await this.riotApi.getMatchesByIds(missedIds, (data) =>
-        this.storageService.saveMatches(data, player.puuid),
+      await this.riotApi.getMatchesByIds(
+        missedIds,
+        async (data) =>
+          await this.storageService.saveMatches(data, player.puuid),
       );
       // since new matches - so assume that stats also outdated
       await this.updateLeaguesStats(player.id);
     }
-    const flt = [...existedMatches, ...newMatches];
-    return [...existedMatches, ...newMatches].filter((match) =>
-      matchIds.includes(match.matchId),
-    );
+
+    const queueVals = getIntEnumVals(Queues);
+    const queueKeys = getIntEnumKeys(Queues);
+
+    return {
+      matchIds,
+      matches: (await this.storageService.getMatchesByIds(matchIds))
+        .existedMatches,
+      page: matchPage.page,
+      perPage: matchPage.perPage,
+      queueId: matchPage.queue,
+      queue: queueKeys[queueVals.indexOf(matchPage.queue)],
+    };
   }
 
   private async updateLeaguesStats(id: string) {
@@ -70,5 +81,10 @@ export class PlayerApiService {
       summaryQuery.id,
       summaryQuery.queue,
     );
+  }
+
+  async getPlayerLeaderboard(nameRegion: NameRegionDto) {
+    const player = await this.getPlayerInfo(nameRegion);
+    return await this.storageService.getPlayerLeads(player.id);
   }
 }
