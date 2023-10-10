@@ -1,6 +1,8 @@
 # This is test or experiment to get Riot Games API for LOL
 For license please see LICENSE file
 
+Please **NOTE:** that endpoint GET /api/v1/data/leaderboard for now calculates leaders only by data that saved in local db
+
 # TODO
 ## v1
 - [x] get player (summoner) data by name
@@ -11,14 +13,16 @@ For license please see LICENSE file
 - [x] get user and update save stats (league api)
 - [x] keep api rate limits (no queues)
 - [x] get leaderboard by pleayer
-- [ ] cid/cd from github actions to digitalocean
-- [ ] check github action
-- [ ] translate shell script to 
+- [x] cid/cd from github actions to digitalocean
+- [x] check github action
 - [x] add postman collection
+
+## v2
+- [ ] translate shell script to docker containers
 
 ## next
 - [ ] keep api rate litmits (queues)
-- [ ] add error logs (possyble db)
+- [ ] add error logs
 - [ ] change from auto update from typeorm entites to migrations
 - [ ] add graphql
 - [ ] handle bad request for api (repeat or log)
