@@ -18,6 +18,7 @@ Please **NOTE:** that endpoint GET /api/v1/data/leaderboard for now calculates l
 - [x] add postman collection
 
 ## v2
+
 - [ ] translate shell script to docker containers
 
 ## next
